@@ -163,8 +163,20 @@ html, body {
 /* 在小屏幕上调整数据卡片为垂直排列 */
 @media (max-width: 768px) {
     .stats-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        padding: 0;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+    
+    .count-box {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 15px 10px;
     }
     
     .count-box.total-laps {
@@ -944,21 +956,85 @@ form {
     padding: 0;
 }
 
-/* 响应式调整 */
-@media (max-width: 650px) {
+/* 响应式调整 - 登录页面 */
+@media (max-width: 768px) {
     .login-container {
-        max-width: 95%;
-        margin: 40px auto;
-        padding: 35px 20px 100px; /* 确保在小屏幕上也有足够的底部空间 */
+        width: 94%;
+        max-width: 94%;
+        margin: 30px auto;
+        padding: 30px 15px 100px;
+        box-sizing: border-box;
+        border-radius: 12px;
+    }
+    
+    .login-header {
+        margin-bottom: 20px;
+    }
+    
+    .login-header h1 {
+        font-size: 24px;
+        margin-top: 5px;
+    }
+    
+    .login-logo {
+        width: 200px;
     }
     
     .login-form {
         padding: 0;
+        width: 100%;
+    }
+    
+    .login-form .form-group {
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    
+    .login-form .form-group label {
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+    
+    .input-with-icon {
+        width: 100%;
+        min-height: 52px;
+    }
+    
+    .input-with-icon input {
+        font-size: 15px;
+        min-width: auto;
+        padding: 14px 15px !important;
+    }
+    
+    .login-container .login-button {
+        height: 52px;
+        font-size: 16px;
+        margin-top: 15px;
     }
     
     .login-footer {
-        bottom: 25px; /* 小屏幕上稍微上调页脚位置 */
-        font-size: 12px; /* 小屏幕上字体可以稍微小一点 */
+        bottom: 20px;
+        font-size: 12px;
+        width: 100%;
+        line-height: 1.4;
+        padding: 10px;
+        box-sizing: border-box;
+        position: absolute;
+        left: 0;
+        right: 0;
+    }
+    
+    .return-button {
+        top: 15px;
+        left: 15px;
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+    
+    .error-box.full-width {
+        font-size: 14px;
+        padding: 12px;
     }
 }
 
@@ -1018,10 +1094,55 @@ form {
 @media (max-width: 768px) {
     .form-group {
         width: 100%;
+        min-width: 100%;
     }
+    
     .form-row {
         flex-direction: column;
         gap: 10px;
+    }
+    
+    .add-runner-container {
+        width: 94%;
+        padding: 30px 15px 40px;
+        margin: 30px auto;
+        box-sizing: border-box;
+    }
+    
+    .add-runner-container form {
+        width: 100%;
+    }
+    
+    .add-runner-container h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    
+    .inline-container {
+        width: 100%;
+    }
+    
+    .buttons-container {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .buttons-container button {
+        width: 100%;
+    }
+    
+    .input-field {
+        width: 100%;
+    }
+    
+    .add-runner-container input[type="text"],
+    .add-runner-container input[type="number"],
+    .add-runner-container input[type="email"],
+    .add-runner-container input[type="password"],
+    .add-runner-container select,
+    .add-runner-container textarea {
+        width: 100%;
+        font-size: 15px;
     }
 }
 
@@ -1979,6 +2100,14 @@ input[type="checkbox"]:checked + .leaderboard-status {
 @media (max-width: 768px) {
     .container {
         grid-template-columns: 1fr;
+        width: 94%;
+        padding: 10px;
+        margin: 10px auto;
+        box-sizing: border-box;
+        position: relative;
+        min-height: 95vh;
+        display: flex;
+        flex-direction: column;
     }
     
     .container.panel-collapsed {
@@ -1987,6 +2116,9 @@ input[type="checkbox"]:checked + .leaderboard-status {
     
     .left-panel {
         margin-bottom: 20px;
+        padding: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .panel-collapsed .left-panel {
@@ -1996,6 +2128,86 @@ input[type="checkbox"]:checked + .leaderboard-status {
     .panel-toggle {
         bottom: 15px;
         left: 0;
+    }
+
+    .right-panel {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 15px;
+        box-sizing: border-box;
+        flex: 1;
+    }
+
+    .runners-section, .volunteers-section {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .stats-grid {
+        padding: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .count-box, .house-box, .leaderboard-container {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .volunteer-grid {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0;
+    }
+    
+    .houses-container {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .styled-table {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .button {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .container .footer,
+    #mainContainer .footer,
+    div.footer,
+    body .footer {
+        width: 94% !important;
+        box-sizing: border-box !important;
+        order: 999 !important;
+        margin: 30px auto 20px auto !important;
+        position: relative !important;
+        padding: 15px 10px !important;
+        left: auto !important;
+        right: auto !important;
+        background: rgba(255, 255, 255, 0.75) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        color: #333 !important;
+        z-index: 10 !important;
+    }
+    
+    .footer p {
+        margin: 0 !important;
+        padding: 3px 0 !important;
+        color: #333 !important;
+        opacity: 1 !important;
     }
 }
 
@@ -2012,8 +2224,10 @@ input[type="checkbox"]:checked + .leaderboard-status {
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .footer p {
     margin: 0;
+    padding: 3px 0;
 }
