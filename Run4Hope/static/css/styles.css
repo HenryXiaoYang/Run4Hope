@@ -646,7 +646,6 @@ form {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     background: rgba(255, 255, 255, 0.25);
-    border-left: 3px solid #1a73e8;
 }
 
 .volunteer-name {
