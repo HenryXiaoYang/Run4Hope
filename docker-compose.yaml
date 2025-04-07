@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  run4hope:
+    image: henryxiaoyang/run4hope
+    container_name: run4hope
+    restart: always
+    volumes:
+        - run4hope:/app
+    environment:
+      DJANGO_SECRET_KEY: Your-Secret-Key
+    ports:
+      - "8000:8000"
+
+volumes:
+    run4hope:

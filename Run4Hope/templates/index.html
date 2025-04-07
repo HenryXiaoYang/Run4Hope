@@ -1,0 +1,370 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container" id="mainContainer">
+        <!-- 左侧面板 -->
+        <div class="left-panel">
+            <!-- 用户登录信息 -->
+            {% if user.is_authenticated %}
+                <div class="user-info-panel">
+                    <div class="panel-header">
+                         <div class="user-avatar">
+                            <img src="{% static 'image/run4hope.png' %}" alt="Run4Hope Logo">
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="user-details">
+                            <span class="welcome-text">Welcome</span>
+                            <span class="username">{{ user.username }}</span>
+                            <form action="{% url 'logout' %}" method="post" class="logout-form">
+                                {% csrf_token %}
+                                <button type="submit" class="logout-button">
+                                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="login-panel">
+                    <div class="panel-header">
+                        <div class="user-avatar">
+                           <img src="{% static 'image/run4hope.png' %}" alt="Run4Hope Logo">
+                       </div>
+                   </div>
+                    <a href="{% url 'login' %}" class="login-button-large">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Login</span>
+                    </a>
+                    <p class="login-hint">Log in to manage runner and volunteer data</p>
+                </div>
+            {% endif %}
+
+            <!-- 上部数据卡片 -->
+            <div class="stats-grid">
+                <div class="count-box">
+                    <strong>Runners</strong>
+                    <div>{{ num_runners }}</div>
+                </div>
+                <div class="count-box">
+                    <strong>Volunteers</strong>
+                    <div>{{ num_volunteers }}</div>
+                </div>
+                <div class="count-box total-laps">
+                    <strong>Total Laps</strong>
+                    <div>{{ total_laps }}</div>
+                </div>
+            </div>
+
+            <!-- 学院卡片 -->
+            <div class="houses-container">
+                {% if leaderboard %}
+                    {% for house in house_data %}
+                        <div class="house-box house-{{ house.css_class }} rank-{{ forloop.counter }}">
+                            <strong>
+                                {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}4️⃣{% endif %}
+                                {{ house.name }}
+                            </strong>
+                            <div>{{ house.laps }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="house-box house-spring">
+                        <strong>Spring House</strong>
+                        <div>{{ spring_laps }}</div>
+                    </div>
+                    <div class="house-box house-summer">
+                        <strong>Summer House</strong>
+                        <div>{{ summer_laps }}</div>
+                    </div>
+                    <div class="house-box house-autumn">
+                        <strong>Autumn House</strong>
+                        <div>{{ autumn_laps }}</div>
+                    </div>
+                    <div class="house-box house-winter">
+                        <strong>Winter House</strong>
+                        <div>{{ winter_laps }}</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- 排行榜开关 -->
+            <div class="leaderboard-container">
+                <label for="leaderboard-switch">Enable Leaderboard</label>
+                <input type="checkbox" id="leaderboard-switch" {% if leaderboard %}checked{% endif %} onchange="toggleLeaderboard()">
+            </div>
+        </div>
+
+        <!-- 右侧面板 -->
+        <div class="right-panel">
+            <!-- 游泳者部分 -->
+            <div class="runners-section">
+                <h2>Runners</h2>
+                {% if have_perm %}
+                    <button class="button" id="addRunnerBtn">
+                        <i class="fa-solid fa-plus"></i> Add Runner
+                    </button>
+                {% endif %}
+
+                <table class="styled-table {% if have_perm %}has-operations{% endif %}" id="runnersTable">
+                    <thead>
+                    <tr>
+                        <th>
+                            <div class="table-header">
+                                <span>Name</span>
+                                <div class="button-container">
+                                    <button onclick="sortTable('name', false)" class="asc-sort-button"></button>
+                                    <button onclick="sortTable('name', true)" class="desc-sort-button"></button>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="table-header">
+                                <span>Student ID</span>
+                                <div class="button-container">
+                                    <button onclick="sortTable('student_id')" class="asc-sort-button"></button>
+                                    <button onclick="sortTable('student_id', true)" class="desc-sort-button"></button>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="table-header">
+                                <span>House</span>
+                                <div class="button-container">
+                                    <button onclick="sortTable('house')" class="asc-sort-button"></button>
+                                    <button onclick="sortTable('house', true)" class="desc-sort-button"></button>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="table-header">
+                                <span>Laps</span>
+                                <div class="button-container">
+                                    <button onclick="sortTable('lap_count')" class="asc-sort-button"></button>
+                                    <button onclick="sortTable('lap_count', true)" class="desc-sort-button"></button>
+                                </div>
+                            </div>
+                        </th>
+                        {% if have_perm %}
+                        <th>Manage</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for runner in runners %}
+                        <tr>
+                            <td>
+                                {% if leaderboard %}
+                                    {% if forloop.counter == 1 %}
+                                        🥇
+                                    {% elif forloop.counter == 2 %}
+                                        🥈
+                                    {% elif forloop.counter == 3 %}
+                                        🥉
+                                    {% endif %}
+                                {% endif %}
+                                {{ runner.name }}
+                            </td>
+                            <td>{{ runner.student_id|default:"/"}}</td>
+                            <td class="house-{{ runner.house|lower }}">{{ runner.house }}</td>
+                            <td>
+                                <div class="lap-controls">
+                                    {% if have_perm %}
+                                    <form action="{% url 'decrement_laps' runner.id %}" method="post" class="lap-form" data-runner-id="{{ runner.id }}" data-action="decrement" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="button" class="lap-button minus-button" {% if runner.lap_count <= 0 %}disabled{% endif %}>
+                                            <i class="fa-solid fa-minus"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    <span class="lap-count" id="lap-count-{{ runner.id }}">{{ runner.lap_count }}</span>
+                                    {% if have_perm %}
+                                    <form action="{% url 'increment_laps' runner.id %}" method="post" class="lap-form" data-runner-id="{{ runner.id }}" data-action="increment" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="button" class="lap-button plus-button">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if have_perm %}
+                                <div class="action-buttons">
+                                    <form action="{% url 'edit_runner' runner.id %}" method="get">
+                                        <button type="submit" class="edit-button"><i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'delete_runner' runner.id %}" method="post"
+                                          onsubmit="confirmDelete(event)">
+                                        {% csrf_token %}
+                                        <button type="submit" class="delete-button"><i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                    {% if have_perm %}
+                                    <form action="{% url 'toggle_favorite' runner.id %}" method="post" class="favorite-form" data-runner-id="{{ runner.id }}">
+                                        {% csrf_token %}
+                                        <button type="button" class="favorite-button {% if runner in current_volunteer.favorites.all %}favorited{% endif %}">
+                                            <i class="fa-solid fa-star"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% if have_perm %}
+                    <button class="button" onclick="downloadRunnersExcel()">
+                        <i class="fa-solid fa-download"></i> Download Excel
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- 志愿者部分 -->
+            <div class="volunteers-section">
+                <h2>Volunteers</h2>
+                <div class="volunteer-header">
+                    {% if have_perm %}
+                        <button class="button" id="addVolunteerBtn">
+                            <i class="fa-solid fa-plus"></i> Add Volunteer
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="volunteer-grid">
+                    {% for volunteer in volunteers %}
+                        <div class="volunteer-box">
+                            <span class="volunteer-name">{{ volunteer.name }}</span>
+                            {% if have_perm %}
+                                <form action="{% url 'delete_volunteer' volunteer.student_id %}" method="post"
+                                      onsubmit="confirmDelete(event)">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-volunteer-button"><i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- 面板切换按钮 -->
+        <button id="panelToggleBtn" class="panel-toggle" title="切换侧栏">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>© {% now "Y" %} Run4Hope </p>
+            <p>By Henry Yang</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加游泳者和志愿者按钮事件
+            const addRunnerBtn = document.getElementById('addRunnerBtn');
+            if (addRunnerBtn) {
+                addRunnerBtn.addEventListener('click', function() {
+                    location.href = "{% url 'add_runner' %}";
+                    return false;
+                });
+            }
+            
+            const addVolunteerBtn = document.getElementById('addVolunteerBtn');
+            if (addVolunteerBtn) {
+                addVolunteerBtn.addEventListener('click', function() {
+                    location.href = "{% url 'add_volunteer' %}";
+                    return false;
+                });
+            }
+            
+            // Handle favorite button clicks
+            document.querySelectorAll('.favorite-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('.favorite-form');
+                    const runnerId = form.dataset.runnerId;
+                    const currentStatus = this.classList.contains('favorited');
+                    
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin' // 确保发送和接收cookie
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`请求失败: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            const newStatus = data.is_favorite;
+                            
+                            // 切换收藏状态样式（根据服务器返回的状态更新）
+                            if (newStatus) {
+                                this.classList.add('favorited');
+                            } else {
+                                this.classList.remove('favorited');
+                            }
+                            
+                            // 重排表格行
+                            const tbody = document.querySelector('#runnersTable tbody');
+                            const rows = Array.from(tbody.querySelectorAll('tr'));
+                            
+                            rows.sort((a, b) => {
+                                const aFavorited = a.querySelector('.favorite-button')?.classList.contains('favorited') || false;
+                                const bFavorited = b.querySelector('.favorite-button')?.classList.contains('favorited') || false;
+                                if (aFavorited === bFavorited) {
+                                    return a.querySelector('td').textContent.localeCompare(b.querySelector('td').textContent);
+                                }
+                                return bFavorited - aFavorited;
+                            });
+                            rows.forEach(row => tbody.appendChild(row));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('请求失败:', error);
+                    });
+                });
+            });
+            
+            // 面板收缩功能
+            const toggleBtn = document.getElementById('panelToggleBtn');
+            const container = document.getElementById('mainContainer');
+            
+            // 检查本地存储中的状态
+            const isPanelCollapsed = localStorage.getItem('panelCollapsed') === 'true';
+            if (isPanelCollapsed) {
+                container.classList.add('panel-collapsed');
+                toggleBtn.classList.add('collapsed');
+                toggleBtn.querySelector('i').classList.remove('fa-chevron-left');
+                toggleBtn.querySelector('i').classList.add('fa-chevron-right');
+            }
+            
+            toggleBtn.addEventListener('click', function() {
+                container.classList.toggle('panel-collapsed');
+                this.classList.toggle('collapsed');
+                
+                // 切换图标
+                const icon = this.querySelector('i');
+                if (container.classList.contains('panel-collapsed')) {
+                    icon.classList.remove('fa-chevron-left');
+                    icon.classList.add('fa-chevron-right');
+                    localStorage.setItem('panelCollapsed', 'true');
+                } else {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-left');
+                    localStorage.setItem('panelCollapsed', 'false');
+                }
+            });
+        });
+    </script>
+{% endblock %}

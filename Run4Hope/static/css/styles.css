@@ -1,0 +1,2020 @@
+html {
+    background: #f5f5f5 url("../image/ykp.webp") no-repeat fixed center center;
+    background-size: cover;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+html::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.15);
+    z-index: 0;
+    pointer-events: none;
+}
+
+html, body {
+    min-height: 100%;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    height: 100%;
+}
+
+/* 确保所有主要内容在滤镜之上 */
+.container, .login-container, .add-runner-container, .logout-container {
+    position: relative;
+    z-index: 1;
+}
+
+:root {
+    --main-color: #ffffff; /* 白色主题 */
+    --main-color-dark: #f5f5f5;
+    --main-color-light: #ffffff;
+    --text-color: #333;
+    --background-blur: rgba(255, 255, 255, 0.65);  /* 改为半透明白色 */
+    --border-radius: 12px;
+    --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s ease;
+    --glass-effect: backdrop-filter blur(10px);
+    --input-background: rgba(255, 255, 255, 0.95);
+    --error-color: #ff6b6b;
+    --success-color: #4caf50;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 330px 1fr;
+    gap: 15px;
+    padding: 20px;
+    width: 95%;
+    max-width: 1800px;
+    margin: 20px auto;
+    min-height: calc(100vh - 40px);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+/* 控制面板收缩时的容器样式 */
+.container.panel-collapsed {
+    grid-template-columns: 0 1fr;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: auto;
+    transition: all 0.3s ease;
+    overflow: visible;
+    padding-right: 5px;
+    margin-bottom: 20px;
+}
+
+.panel-collapsed .left-panel {
+    margin-left: -330px;
+    opacity: 0;
+}
+
+.right-panel {
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow-y: auto;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.panel-collapsed .right-panel {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.title {
+    text-align: center;
+    color: #333;
+    text-shadow: none;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.title h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.logo img {
+    height: 80px;
+    width: auto;
+    transition: var(--transition);
+}
+
+.logo img:hover {
+    transform: scale(1.05);
+}
+
+.user-logged-in {
+    display: none;
+}
+
+.user-info {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-info span {
+    display: flex;
+    align-items: center;
+}
+
+.user-info strong {
+    margin: 0 4px;
+    color: #1a73e8;
+    font-weight: 700;
+}
+
+/* 数据卡片网格 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+/* 在小屏幕上调整数据卡片为垂直排列 */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+    
+    .count-box.total-laps {
+        grid-column: auto;
+    }
+}
+
+.count-box {
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    text-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.count-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.count-box strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.count-box div {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+/* Total Laps的长方形卡片样式 */
+.count-box.total-laps {
+    grid-column: 1 / span 2;
+}
+
+.count-box.total-laps strong {
+    font-size: 18px;
+}
+
+.count-box.total-laps div {
+    font-size: 28px;
+}
+
+/* 学院卡片（春夏秋冬） */
+.houses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s ease;
+    padding: 10px;
+}
+
+.house-box {
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333;
+    border-left: 5px solid;
+    text-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.house-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.house-spring {
+    border-color: #4caf50;
+}
+
+.house-summer {
+    border-color: #ffc107;
+}
+
+.house-autumn {
+    border-color: #f44336;
+}
+
+.house-winter {
+    border-color: #1565c0;
+}
+
+.house-box strong {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.house-box div {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* 排行榜开关 */
+.leaderboard-container {
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+    color: #333;
+    text-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-container:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+}
+
+.leaderboard-container label {
+    font-size: 16px;
+    font-weight: 600;
+    margin-right: 10px;
+    color: #333;
+}
+
+.leaderboard-container input[type="checkbox"] {
+    transform: scale(1.5);
+    accent-color: var(--main-color);
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.button {
+    background-color: var(--main-color);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    transition: var(--transition);
+    padding: 12px 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button:hover {
+    background-color: var(--main-color-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.button i {
+    margin-right: 5px;
+}
+
+/* 游泳者表格 */
+.runners-section h2 {
+    color: #333;
+    text-shadow: none;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: center;
+    table-layout: fixed;
+}
+
+.styled-table th, .styled-table td {
+    padding: 15px 20px;
+    text-align: center;
+}
+
+/* 表格中的列宽度设置 */
+.styled-table th:nth-child(1) {
+    width: 25%;
+}
+
+.styled-table th:nth-child(2) {
+    width: 20%;
+}
+
+.styled-table th:nth-child(3) {
+    width: 20%;
+}
+
+.styled-table th:nth-child(4) {
+    width: 35%;
+}
+
+/* 当有操作列时的列宽度 */
+.has-operations th:nth-child(1) {
+    width: 20%;
+}
+
+.has-operations th:nth-child(2) {
+    width: 15%;
+}
+
+.has-operations th:nth-child(3) {
+    width: 15%;
+}
+
+.has-operations th:nth-child(4) {
+    width: 30%;
+}
+
+.has-operations th:nth-child(5) {
+    width: 20%;
+}
+
+/* 表格表头排序按钮 */
+.table-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-header span {
+    flex: 1;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.asc-sort-button,
+.desc-sort-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 3px;
+    display: block;
+    font-size: 12px;
+    color: #333;
+    transition: var(--transition);
+}
+
+.asc-sort-button:hover,
+.desc-sort-button:hover {
+    transform: scale(1.2);
+}
+
+.asc-sort-button::after {
+    content: "▲";
+}
+
+.desc-sort-button::after {
+    content: "▼";
+}
+
+.styled-table thead tr {
+    background-color: var(--main-color);
+    color: #333;
+    text-align: center;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.styled-table thead th:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+.styled-table thead th:last-child {
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+.styled-table tbody tr {
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: var(--transition);
+    color: #333;
+    text-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.styled-table tbody tr:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.styled-table tbody td:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+.styled-table tbody td:last-child {
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+/* 学院标识颜色 - 调整对比度 */
+td.house-spring {
+    color: #2e7d32;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+td.house-summer {
+    color: #f57f17;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+td.house-autumn {
+    color: #c62828;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+td.house-winter {
+    color: #1565c0;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+/* 春季学院卡片颜色调整 */
+.house-spring strong {
+    color: #2e7d32;
+}
+.house-spring div {
+    color: #2e7d32;
+}
+
+/* 夏季学院卡片颜色调整 */
+.house-summer strong {
+    color: #f57f17;
+}
+.house-summer div {
+    color: #f57f17;
+}
+
+/* 秋季学院卡片颜色调整 */
+.house-autumn strong {
+    color: #c62828;
+}
+.house-autumn div {
+    color: #c62828;
+}
+
+/* 冬季学院卡片颜色调整 */
+.house-winter strong {
+    color: #1565c0;
+}
+.house-winter div {
+    color: #1565c0;
+}
+
+/* 按钮样式 */
+.edit-button, .delete-button, .favorite-button {
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #333;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    transition: var(--transition);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 0 5px;
+}
+
+.edit-button:hover {
+    background-color: var(--main-color);
+    color: #333;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.delete-button:hover {
+    background-color: var(--main-color);
+    color: #333;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* 添加收藏按钮的金色样式 */
+.favorite-button.favorited {
+    color: gold; /* 只有星星图标变成金色 */
+}
+
+.favorite-button.favorited:hover {
+    color: gold; /* 悬停时保持金色 */
+    transform: translateY(-3px);
+}
+
+.favorite-button:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+form {
+    display: inline-block;
+}
+
+/* 志愿者部分 */
+.volunteers-section h2 {
+    color: #333;
+    text-shadow: none;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.volunteer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.volunteer-box {
+    position: relative;
+    background: var(--background-blur);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    min-width: 150px;
+    max-width: 180px;
+    height: 40px;
+    transition: var(--transition);
+    border-left: 3px solid #1a73e8;
+    color: #333;
+    text-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.volunteer-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background: rgba(26, 115, 232, 0.1);
+    border-left: 3px solid #1a73e8;
+}
+
+.volunteer-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
+    text-align: center;
+}
+
+.delete-volunteer-button {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    color: #f44336;
+    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.delete-volunteer-button:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background-color: rgba(244, 67, 54, 0.2);
+}
+
+.volunteer-header {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* login.html */
+
+.login-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 45px 50px 110px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 600px;
+    margin: 80px auto;
+    text-align: center;
+    color: #333;
+    animation: fadeIn 0.6s ease;
+    border-left: 4px solid var(--main-color-dark);
+    transform: translateZ(0);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-container h1 {
+    color: #333;
+    margin-bottom: 35px;
+    text-shadow: none;
+    font-size: 32px;
+    letter-spacing: 1px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+}
+
+.login-form .form-group {
+    width: 100%;
+    margin-bottom: 28px;
+    text-align: left;
+}
+
+.login-form .form-group label {
+    display: block;
+    margin-bottom: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+    text-shadow: none;
+    transition: var(--transition);
+    letter-spacing: 0.5px;
+}
+
+.login-form .form-group:focus-within label {
+    color: #333;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.97);
+    border-radius: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    min-height: 58px;
+    width: 100%;
+}
+
+.input-with-icon:focus-within {
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25), 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.input-with-icon i {
+    font-size: 20px;
+    color: #555;
+    margin-left: 20px;
+    min-width: 24px;
+    transition: var(--transition);
+}
+
+.input-with-icon:focus-within i {
+    color: #333;
+}
+
+.input-with-icon input {
+    flex: 1;
+    border: none !important;
+    background: transparent !important;
+    padding: 18px 20px !important;
+    font-size: 17px;
+    outline: none;
+    width: 100%;
+    color: #333;
+    transition: var(--transition);
+    min-width: 240px;
+}
+
+.login-container .login-button {
+    background-color: var(--main-color);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 16px 25px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 100%;
+    margin-top: 25px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container .login-button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.6s;
+}
+
+.login-container .login-button:hover {
+    background-color: var(--main-color-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.login-container .login-button:hover:before {
+    left: 100%;
+}
+
+.login-container .login-button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.login-container .login-button i {
+    font-size: 20px;
+    text-shadow: none;
+}
+
+.return-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #333;
+    font-size: 20px;
+    transition: var(--transition);
+    opacity: 0.7;
+    background: rgba(0, 0, 0, 0.05);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.return-button:hover {
+    color: #333;
+    opacity: 1;
+    transform: translateX(-3px);
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.error-box {
+    font-weight: 600;
+    color: var(--error-color);
+    margin-top: 8px;
+    font-size: 14px;
+    text-align: left;
+    background-color: rgba(255, 105, 105, 0.15);
+    padding: 8px 12px;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 0, 0, 0.1);
+}
+
+.error-box.full-width {
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
+    background: rgba(255, 105, 105, 0.15);
+    border-left: 3px solid var(--error-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.12);
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    width: 100%;
+}
+
+.error-box.full-width div {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.error-box.full-width strong {
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #ff4d4d;
+}
+
+/* 添加版权信息在登录页面底部 */
+.login-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #333;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.login-footer p {
+    margin: 0;
+    padding: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 650px) {
+    .login-container {
+        max-width: 95%;
+        margin: 40px auto;
+        padding: 35px 20px 100px; /* 确保在小屏幕上也有足够的底部空间 */
+    }
+    
+    .login-form {
+        padding: 0;
+    }
+    
+    .login-footer {
+        bottom: 25px; /* 小屏幕上稍微上调页脚位置 */
+        font-size: 12px; /* 小屏幕上字体可以稍微小一点 */
+    }
+}
+
+/* add_runner.html, edit_runner.html, add_volunteer.html */
+
+.add-runner-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 40px 50px 50px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    width: 90%;
+    max-width: 700px;
+    margin: 60px auto;
+    text-align: center;
+    color: #333;
+    animation: fadeIn 0.5s ease;
+    border-left: 4px solid var(--main-color-dark);
+}
+
+.add-runner-container h1 {
+    color: #333;
+    margin-bottom: 30px;
+    text-shadow: none;
+    font-size: 28px;
+}
+
+.add-runner-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0 0 15px 0;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+}
+
+/* 在小屏幕上让表单项垂直排列 */
+@media (max-width: 768px) {
+    .form-group {
+        width: 100%;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+    text-shadow: none;
+    transition: var(--transition);
+    position: relative;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: #333;
+}
+
+.form-group label:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--main-color-light);
+    transition: var(--transition);
+}
+
+.form-group:focus-within label {
+    color: #333;
+}
+
+.form-group:focus-within label:after {
+    width: 100%;
+}
+
+.input-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: var(--input-background);
+    border-radius: var(--border-radius);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.input-field:focus-within {
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+.input-field i {
+    font-size: 18px;
+    color: #555;
+    margin-left: 15px;
+    min-width: 20px;
+}
+
+.inline-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: var(--input-background);
+    border-radius: var(--border-radius);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.inline-container:focus-within {
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+.inline-container strong {
+    margin: 0 10px;
+    color: #555;
+    font-size: 16px;
+}
+
+.inline-container input {
+    flex: 1;
+    border: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 12px 15px 12px 10px !important;
+    font-size: 16px;
+    outline: none;
+    color: #333;
+}
+
+.add-runner-container input[type="text"],
+.add-runner-container input[type="number"],
+.add-runner-container input[type="email"],
+.add-runner-container input[type="password"],
+.add-runner-container select,
+.add-runner-container textarea {
+    width: 100%;
+    padding: 14px 15px;
+    border: none;
+    background-color: transparent;
+    font-size: 16px;
+    transition: var(--transition);
+    color: #333;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.add-runner-container select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 15px;
+    padding-right: 45px;
+}
+
+.error-box {
+    font-weight: 600;
+    color: var(--error-color);
+    margin-top: 8px;
+    font-size: 14px;
+    text-align: left;
+    background-color: rgba(255, 105, 105, 0.15);
+    padding: 8px 12px;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 0, 0, 0.1);
+}
+
+.error-box i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.error-box.full-width {
+    width: 100%;
+    margin: 10px 0 20px;
+}
+
+/* 覆盖表单中原来的submit-button样式，防止它干扰对齐 */
+.add-runner-container form .submit-button {
+    /* 仅重置会影响对齐的属性，而不是全部重置 */
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    margin-top: 0;
+    /* 保留其他样式 */
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+/* 统一按钮基础样式 - 使用更基础的CSS属性重置并统一样式 */
+.buttons-container button {
+    width: 200px;
+    height: 52px;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    text-decoration: none;
+    position: relative; /* 确保相对定位一致 */
+    top: 0; /* 确保没有顶部偏移 */
+}
+
+/* 取消按钮样式 */
+.buttons-container .cancel-button {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+/* 提交按钮样式 - 使用更强的选择器优先级 */
+.buttons-container .submit-button,
+.buttons-container button.submit-button,
+button.submit-button {
+    background-color: var(--main-color) !important;
+    color: #333 !important;
+    text-shadow: none;
+    border-radius: var(--border-radius) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 统一图标样式 */
+.buttons-container button i {
+    font-size: 18px;
+}
+
+/* 按钮通用悬停效果 */
+.buttons-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 提交按钮悬停效果 */
+.buttons-container .submit-button:hover,
+.buttons-container button.submit-button:hover,
+button.submit-button:hover {
+    background-color: var(--main-color-dark) !important;
+}
+
+/* 取消按钮悬停效果 */
+.buttons-container .cancel-button:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: #333;
+}
+
+.return-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #333;
+    font-size: 20px;
+    transition: var(--transition);
+    opacity: 0.7;
+    background: rgba(0, 0, 0, 0.05);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.return-button:hover {
+    color: #333;
+    opacity: 1;
+    transform: translateX(-3px);
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.error-message {
+    color: var(--error-color);
+    background-color: rgba(244, 67, 54, 0.1);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.form-actions {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.logout-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 2rem;
+    position: relative;
+}
+
+.logout-card {
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 3rem;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.logout-icon {
+    font-size: 5rem;
+    color: var(--success-color);
+    margin-bottom: 1.5rem;
+    animation: scaleIn 0.5s ease-out 0.2s forwards;
+    transform: scale(0);
+    opacity: 0;
+}
+
+.logout-card h1 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-shadow: none;
+}
+
+.logout-card p {
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.logout-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.login-button, .home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.login-button {
+    background-color: var(--main-color);
+    color: #333;
+}
+
+.home-button {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.login-button:hover, .home-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-button:hover {
+    background-color: var(--main-color-dark);
+}
+
+.home-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.logo-small {
+    position: absolute;
+    bottom: 2rem;
+    opacity: 0.7;
+    width: 100px;
+    animation: fadeInUp 0.8s ease-out 0.5s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.logo-small img {
+    width: 100%;
+    height: auto;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 0.7;
+        transform: translateY(0);
+    }
+}
+
+/* 新的用户信息面板样式 */
+.user-info-panel {
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 12px;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    border-left: 4px solid var(--main-color-dark);
+}
+
+.user-info-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.user-avatar {
+    font-size: 35px;
+    color: #333;
+    margin-right: 0;
+    text-shadow: none;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.user-avatar img {
+    width: 260px;
+    height: auto;
+    border-radius: 0;
+    object-fit: contain;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    transition: var(--transition);
+    margin: 0 auto;
+}
+
+.user-avatar img:hover {
+    transform: scale(1.1);
+}
+
+.user-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome-text {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.username {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+    text-shadow: none;
+}
+
+.logout-button {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+}
+
+.logout-button:hover {
+    background: var(--main-color);
+    color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 新的登录面板样式 */
+.login-panel {
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    border-left: 4px solid var(--main-color-dark);
+}
+
+.login-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.login-button-large {
+    background-color: var(--main-color);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 12px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: var(--transition);
+    margin-bottom: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-button-large:hover {
+    background-color: var(--main-color-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.login-hint {
+    font-size: 13px;
+    color: #333;
+    text-align: center;
+    margin: 0;
+}
+
+/* 应用标题放在用户卡片中 */
+.panel-header {
+    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-title {
+    font-size: 1.8rem;
+    margin: 0;
+    color: #333;
+    text-shadow: none;
+    font-weight: 700;
+}
+
+/* 左上角用户头像 */
+.user-avatar-corner {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 40px;
+    color: #333;
+    text-shadow: none;
+    transition: var(--transition);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar-corner:hover {
+    transform: scale(1.1);
+    color: #333;
+    background: var(--main-color);
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+/* 统一按钮基础样式 - 使用更基础的CSS属性重置并统一样式 */
+.buttons-container button {
+    width: 200px;
+    height: 52px;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    text-decoration: none;
+    position: relative; /* 确保相对定位一致 */
+    top: 0; /* 确保没有顶部偏移 */
+}
+
+/* 取消按钮样式 */
+.buttons-container .cancel-button {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+/* 提交按钮样式 */
+.buttons-container .submit-button {
+    background-color: var(--main-color);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-shadow: none;
+}
+
+/* 统一图标样式 */
+.buttons-container button i {
+    font-size: 18px;
+}
+
+/* 悬停效果 */
+.buttons-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.buttons-container .submit-button:hover {
+    background-color: var(--main-color-dark);
+}
+
+.buttons-container .cancel-button:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: #333;
+}
+
+/* 登录页面Logo和头部样式 */
+.login-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.login-logo {
+    width: 260px;
+    height: auto;
+    margin-bottom: 20px;
+    animation: fadeInDown 0.8s ease-out;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 修复错误框样式与其他部分的冲突 */
+.error-box.full-width {
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
+    background: rgba(255, 105, 105, 0.15);
+    border-left: 3px solid var(--error-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.12);
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    width: 100%;
+}
+
+.error-box.full-width div {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.error-box.full-width strong {
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #ff4d4d;
+}
+
+/* 排行榜相关样式 */
+.rank-1 {
+    order: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    transition: all 0.3s ease;
+    z-index: 4;
+}
+
+.rank-2 {
+    order: 2;
+    transform: scale(1.03);
+    box-shadow: 0 0 12px rgba(192, 192, 192, 0.7);
+    transition: all 0.3s ease;
+    z-index: 3;
+}
+
+.rank-3 {
+    order: 3;
+    transform: scale(1.01);
+    box-shadow: 0 0 10px rgba(205, 127, 50, 0.7);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.rank-4 {
+    order: 4;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.houses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s ease;
+    padding: 10px;
+}
+
+.house-box {
+    position: relative;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+/* 排行榜启用状态指示器 */
+.leaderboard-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.leaderboard-container input[type="checkbox"] {
+    appearance: none;
+    width: 50px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.leaderboard-container input[type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: left 0.3s;
+}
+
+.leaderboard-container input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+}
+
+.leaderboard-container input[type="checkbox"]:checked::before {
+    left: 28px;
+}
+
+/* 给排名前三的游泳者的名字添加特殊效果 */
+#runnersTable tbody tr:nth-child(1) td:first-child,
+#runnersTable tbody tr:nth-child(2) td:first-child,
+#runnersTable tbody tr:nth-child(3) td:first-child {
+    font-weight: bold;
+}
+
+/* 排名图标样式 */
+.rank-icon {
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.rank-icon.gold {
+    color: #FFD700;
+    text-shadow: 0 0 3px rgba(218, 165, 32, 0.7);
+}
+
+.rank-icon.silver {
+    color: #C0C0C0;
+    text-shadow: 0 0 3px rgba(192, 192, 192, 0.7);
+}
+
+.rank-icon.bronze {
+    color: #CD7F32;
+    text-shadow: 0 0 3px rgba(205, 127, 50, 0.7);
+}
+
+.rank-icon.fourth {
+    color: #aaa;
+    text-shadow: 0 0 3px rgba(170, 170, 170, 0.7);
+}
+
+.leaderboard-status {
+    font-size: 0.85em;
+    color: #333;
+    transition: color 0.3s;
+}
+
+input[type="checkbox"]:checked + .leaderboard-status {
+    color: #333;
+    font-weight: bold;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.leaderboard-container input[type="checkbox"]:checked + .leaderboard-status {
+    animation: pulse 2s infinite;
+}
+
+/* 圈数控制按钮样式 */
+.lap-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.lap-button {
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    color: #333;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.lap-button:hover:not(:disabled) {
+    background: var(--main-color);
+    color: #333;
+    transform: scale(1.1);
+}
+
+.lap-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.lap-count {
+    font-size: 18px;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+    color: #333;
+    text-shadow: none;
+}
+
+.plus-button {
+    background: rgba(76, 175, 80, 0.3);
+}
+
+.plus-button:hover:not(:disabled) {
+    background: var(--main-color);
+    color: #333;
+}
+
+.minus-button {
+    background: rgba(244, 67, 54, 0.3);
+}
+
+.minus-button:hover:not(:disabled) {
+    background: var(--main-color);
+    color: #333;
+}
+
+/* 面板切换按钮样式 */
+.panel-toggle {
+    position: fixed;
+    left: 0;
+    bottom: 20px;
+    width: 30px;
+    height: 36px;
+    background: var(--main-color);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0 8px 8px 0;
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.panel-toggle:hover {
+    background: var(--main-color-dark);
+    width: 35px;
+}
+
+.panel-toggle.collapsed {
+    left: 0;
+}
+
+.panel-toggle.collapsed i {
+    transform: rotate(180deg);
+}
+
+/* 适配切换按钮响应式布局 */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    
+    .container.panel-collapsed {
+        grid-template-columns: 1fr;
+    }
+    
+    .left-panel {
+        margin-bottom: 20px;
+    }
+    
+    .panel-collapsed .left-panel {
+        display: none;
+    }
+    
+    .panel-toggle {
+        bottom: 15px;
+        left: 0;
+    }
+}
+
+/* 页脚样式 */
+.footer {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 15px 0;
+    color: #333;
+    font-size: 14px;
+    margin-top: 20px;
+    background: var(--background-blur);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.footer p {
+    margin: 0;
+}

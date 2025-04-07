@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% block title %}<title>Run4Hope</title>{% endblock %}
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    {% load static %}
+    <link rel="shortcut icon" href="{% static 'image/favicon.ico' %}">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
+
+    <script src="{% static 'js/xlsx.full.min.js' %}"></script>
+    <script src="{% static 'js/sort_runner.js' %}"></script>
+    <script src="{% static 'js/create_excel.js' %}"></script>
+    <script src="{% static 'js/confirm_delete.js' %}"></script>
+    <script src="{% static 'js/real_time_leaderboard.js' %}"></script>
+</head>
+
+<body>
+{% block content %}{% endblock %}
+</body>
+</html>

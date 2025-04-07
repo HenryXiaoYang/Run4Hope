@@ -1,0 +1,74 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <div class="add-runner-container">
+        <a href="{% url 'index' %}" class="return-button"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1><i class="fa-solid fa-user-plus"></i> Add Volunteer</h1>
+        <form method="post" action="{% url 'add_volunteer' %}">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}"><i class="fa-solid fa-user"></i> {{ form.name.label }}</label>
+                    <div class="input-field">
+                        {{ form.name }}
+                    </div>
+                    {% if form.name.errors %}
+                        <div class="error-box">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ form.name.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.student_id.id_for_label }}"><i class="fa-solid fa-id-card"></i> {{ form.student_id.label }}</label>
+                    <div class="inline-container">
+                        <strong>s</strong> {{ form.student_id }}
+                    </div>
+                    {% if form.student_id.errors %}
+                        <div class="error-box">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ form.student_id.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}"><i class="fa-solid fa-lock"></i> {{ form.password.label }}</label>
+                    <div class="input-field">
+                        {{ form.password }}
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="error-box">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ form.password.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.re_password.id_for_label }}"><i class="fa-solid fa-lock-open"></i> {{ form.re_password.label }}</label>
+                    <div class="input-field">
+                        {{ form.re_password }}
+                    </div>
+                    {% if form.re_password.errors %}
+                        <div class="error-box">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ form.re_password.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 显示非字段错误 -->
+            {% if form.non_field_errors %}
+                <div class="error-box full-width">
+                    <i class="fa-solid fa-triangle-exclamation"></i> {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="buttons-container">
+                <button type="submit" class="submit-button">
+                    <i class="fa-solid fa-plus"></i> Add Volunteer
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

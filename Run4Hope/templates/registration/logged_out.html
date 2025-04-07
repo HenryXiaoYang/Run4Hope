@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="logout-container">
+    <div class="logout-card">
+        <div class="logout-icon">
+            <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <h1>Logged out</h1>
+        
+        <div class="logout-actions">
+            <a href="{% url 'login' %}" class="login-button">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </a>
+            <a href="{% url 'home' %}" class="home-button">
+                <i class="fa-solid fa-home"></i> Go Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
