@@ -119,9 +119,6 @@ function refreshTable() {
                     }
                 }
             });
-            
-            // 重新绑定圈数按钮事件
-            rebindLapButtonEvents();
         })
         .catch(error => console.error('获取数据时出错:', error));
 }
@@ -142,88 +139,9 @@ function updateElements(selector, docSource) {
 
 // 重新绑定圈数按钮的事件处理函数
 function rebindLapButtonEvents() {
-    // 获取所有加减圈按钮
-    const lapButtons = document.querySelectorAll('.lap-button');
-    
-    // 为每个按钮添加点击事件
-    lapButtons.forEach(button => {
-        // 清除现有事件以避免重复绑定
-        button.removeEventListener('click', handleLapButtonClick);
-        // 添加新事件
-        button.addEventListener('click', handleLapButtonClick);
-    });
-}
-
-// 按钮点击处理函数
-function handleLapButtonClick() {
-    // 如果按钮被禁用，不执行操作
-    if (this.hasAttribute('disabled')) return;
-    
-    // 获取表单和相关数据
-    const form = this.closest('form');
-    const runnerId = form.dataset.runnerId;
-    const action = form.dataset.action;
-    const url = form.action;
-    const csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
-    
-    // 获取当前圈数显示元素
-    const lapCountElement = document.getElementById(`lap-count-${runnerId}`);
-    const currentLaps = parseInt(lapCountElement.textContent);
-    
-    // 防止负值
-    if (action === 'decrement' && currentLaps <= 0) return;
-    
-    // 乐观更新UI（不等待服务器响应）
-    if (action === 'increment') {
-        lapCountElement.textContent = currentLaps + 1;
-    } else if (action === 'decrement' && currentLaps > 0) {
-        lapCountElement.textContent = currentLaps - 1;
-        
-        // 如果圈数为1且要减1，则禁用减号按钮
-        if (currentLaps === 1) {
-            this.disabled = true;
-        }
-    }
-    
-    // 发送AJAX请求
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // 更新为服务器返回的实际值
-            lapCountElement.textContent = data.lap_count;
-            
-            // 根据返回的圈数更新按钮状态
-            if (action === 'decrement') {
-                const minusButton = form.querySelector('.minus-button');
-                if (data.lap_count <= 0) {
-                    minusButton.disabled = true;
-                } else {
-                    minusButton.disabled = false;
-                }
-            }
-            
-            // 更新学院圈数
-            const house = data.house.toLowerCase();
-            document.querySelector(`.house-${house} div`).textContent = data[`${house}_laps`];
-            
-            // 更新总圈数和筹集金额
-            document.querySelector('.count-box:nth-child(3) div').textContent = data.total_laps;
-            document.querySelector('.count-box:nth-child(4) div').textContent = data.amount_raised + '¥';
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        // 发生错误时恢复原来的值
-        lapCountElement.textContent = currentLaps;
-    });
+    // 此函数现已废弃，事件绑定在index.html中处理
+    console.warn('rebindLapButtonEvents is deprecated. Events are now handled in index.html');
+    return false;
 }
 
 // 初始化时绑定事件
@@ -237,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
             refreshInterval = setInterval(refreshTable, 5000);
         }
         
-        // 初始绑定按钮事件
-        rebindLapButtonEvents();
+        // 不再绑定按钮事件，交给index.html处理
+        // rebindLapButtonEvents();
     }
 });

@@ -239,7 +239,7 @@
                         <div class="volunteer-box">
                             <span class="volunteer-name">{{ volunteer.name }}</span>
                             {% if have_perm %}
-                                <form action="{% url 'delete_volunteer' volunteer.student_id %}" method="post"
+                                <form action="{% url 'delete_volunteer' volunteer.name %}" method="post"
                                       onsubmit="confirmDelete(event)">
                                     {% csrf_token %}
                                     <button type="submit" class="delete-volunteer-button"><i class="fa-solid fa-trash"></i>
@@ -332,6 +332,118 @@
                     })
                     .catch(error => {
                         console.error('请求失败:', error);
+                    });
+                });
+            });
+            
+            // 移除之前添加的事件监听器，避免重复绑定
+            const lapButtons = document.querySelectorAll('.plus-button, .minus-button');
+            lapButtons.forEach(button => {
+                // 使用克隆节点的方式移除所有事件监听器
+                const newButton = button.cloneNode(true);
+                if (button.parentNode) {
+                    button.parentNode.replaceChild(newButton, button);
+                }
+            });
+            
+            // 重新绑定圈数增减按钮事件
+            document.querySelectorAll('.plus-button, .minus-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault(); // 防止默认行为
+                    const form = this.closest('.lap-form');
+                    const runnerId = form.dataset.runnerId;
+                    const action = form.dataset.action;
+                    
+                    // 如果是减少按钮且已禁用，则不执行操作
+                    if (action === 'decrement' && this.disabled) {
+                        return;
+                    }
+                    
+                    // 防止重复点击 - 添加处理中标记
+                    if (form.classList.contains('processing')) {
+                        return;
+                    }
+                    form.classList.add('processing');
+                    
+                    // 保存当前圈数，以便请求失败时回滚
+                    const lapCountElement = document.getElementById(`lap-count-${runnerId}`);
+                    const originalValue = parseInt(lapCountElement.textContent);
+                    
+                    // 乐观更新UI
+                    if (action === 'increment') {
+                        lapCountElement.textContent = originalValue + 1;
+                    } else if (action === 'decrement' && originalValue > 0) {
+                        lapCountElement.textContent = originalValue - 1;
+                    }
+                    
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`请求失败: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // 确保使用服务器返回的实际值更新UI
+                            lapCountElement.textContent = data.lap_count;
+                            
+                            // 如果圈数为0，禁用减号按钮
+                            if (action === 'decrement' || data.lap_count <= 0) {
+                                const decrementForm = document.querySelector(`.lap-form[data-runner-id="${runnerId}"][data-action="decrement"]`);
+                                if (decrementForm) {
+                                    const minusBtn = decrementForm.querySelector('.minus-button');
+                                    if (minusBtn) {
+                                        minusBtn.disabled = data.lap_count <= 0;
+                                    }
+                                }
+                            } else if (action === 'increment' && data.lap_count > 0) {
+                                // 确保另一个表单中的减号按钮启用
+                                const decrementForm = document.querySelector(`.lap-form[data-runner-id="${runnerId}"][data-action="decrement"]`);
+                                if (decrementForm) {
+                                    const minusBtn = decrementForm.querySelector('.minus-button');
+                                    if (minusBtn) {
+                                        minusBtn.disabled = false;
+                                    }
+                                }
+                            }
+                            
+                            // 更新所有学院和总圈数
+                            document.querySelectorAll('.house-box.house-spring').forEach(el => {
+                                el.querySelector('div').textContent = data.spring_laps;
+                            });
+                            document.querySelectorAll('.house-box.house-summer').forEach(el => {
+                                el.querySelector('div').textContent = data.summer_laps;
+                            });
+                            document.querySelectorAll('.house-box.house-autumn').forEach(el => {
+                                el.querySelector('div').textContent = data.autumn_laps;
+                            });
+                            document.querySelectorAll('.house-box.house-winter').forEach(el => {
+                                el.querySelector('div').textContent = data.winter_laps;
+                            });
+                            
+                            // 更新总圈数
+                            document.querySelector('.count-box.total-laps div').textContent = data.total_laps;
+                        } else {
+                            // 如果服务器返回成功但处理失败，回滚UI
+                            lapCountElement.textContent = originalValue;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('请求失败:', error);
+                        // 发生错误时恢复原来的UI
+                        lapCountElement.textContent = originalValue;
+                    })
+                    .finally(() => {
+                        // 无论成功失败，移除处理中标记
+                        form.classList.remove('processing');
                     });
                 });
             });

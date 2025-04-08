@@ -234,10 +234,7 @@ def toggle_favorite(request, pk):
         except Volunteer.DoesNotExist:
             # 如果是管理员/超级用户，自动创建志愿者记录
             if request.user.is_staff or request.user.is_superuser:
-                # 创建临时学号
-                temp_student_id = f"admin_{request.user.id}"
                 volunteer = Volunteer.objects.create(
-                    student_id=temp_student_id,
                     name=request.user.username
                 )
             else:
@@ -288,16 +285,11 @@ def add_volunteer(request):
         if not form.check_password():
             return render(request, "add_volunteer.html", context={"form": form})
 
-        if Volunteer.exist_student_id(student_id=form.cleaned_data["student_id"]):
-            form.add_error(None, "Student ID already exists")
-            return render(request, "add_volunteer.html", context={"form": form})
-
         if User.objects.filter(username=form.cleaned_data["name"]).exists():
             form.add_error(None, "Username already exists")
             return render(request, "add_volunteer.html", context={"form": form})
 
         Volunteer.objects.create(
-            student_id=form.cleaned_data["student_id"],
             name=form.cleaned_data["name"],
         )
 
@@ -322,10 +314,9 @@ def add_volunteer(request):
 def delete_volunteer(request, pk):
     pk = escape(pk)
     if request.method == "POST":
-        username = Volunteer.objects.filter(student_id=pk).values('name').first()['name']
-
-        User.objects.filter(username=username).delete()
-        Volunteer.objects.filter(student_id=pk).delete()
+        # 使用name作为主键
+        User.objects.filter(username=pk).delete()
+        Volunteer.objects.filter(name=pk).delete()
 
     return HttpResponseRedirect(reverse('home'))
 

@@ -50,10 +50,6 @@ class AddRunnerForm(forms.Form):
 
 
 class AddVolunteerForm(forms.Form):
-    student_id = forms.CharField(
-        widget=forms.TextInput(attrs={"placeholder": "Student ID", "class": "form-field"}),
-        error_messages={"required": "Please enter Student ID"}
-    )
     name = forms.CharField(
         widget=forms.TextInput(attrs={"placeholder": "Username", "class": "form-field"}),
         max_length=100,
@@ -68,11 +64,11 @@ class AddVolunteerForm(forms.Form):
         label="Confirm password"
     )
 
-    def clean_student_id(self):
-        student_id = self.cleaned_data["student_id"]
-        if Volunteer.exist_student_id(student_id):
-            raise ValidationError("The student ID already exists!")
-        return student_id
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        if Volunteer.exist_name(name):
+            raise ValidationError("The username already exists!")
+        return name
 
     def check_password(self):
         password = self.cleaned_data["password"]
