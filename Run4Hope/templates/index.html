@@ -154,7 +154,7 @@
                     <tbody>
                     {% for runner in runners %}
                         <tr>
-                            <td>
+                            <td data-label="Name">
                                 {% if leaderboard %}
                                     {% if forloop.counter == 1 %}
                                         🥇
@@ -166,9 +166,9 @@
                                 {% endif %}
                                 {{ runner.name }}
                             </td>
-                            <td>{{ runner.student_id|default:"/"}}</td>
-                            <td class="house-{{ runner.house|lower }}">{{ runner.house }}</td>
-                            <td>
+                            <td data-label="Student ID">{{ runner.student_id|default:"/"}}</td>
+                            <td data-label="House" class="house-{{ runner.house|lower }}">{{ runner.house }}</td>
+                            <td data-label="Laps">
                                 <div class="lap-controls">
                                     {% if have_perm %}
                                     <form action="{% url 'decrement_laps' runner.id %}" method="post" class="lap-form" data-runner-id="{{ runner.id }}" data-action="decrement" style="display: inline;">
@@ -189,7 +189,7 @@
                                     {% endif %}
                                 </div>
                             </td>
-                            <td>
+                            <td data-label="Manage">
                                 {% if have_perm %}
                                 <div class="action-buttons">
                                     <form action="{% url 'edit_runner' runner.id %}" method="get">

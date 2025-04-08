@@ -160,11 +160,11 @@ html, body {
     margin-bottom: 12px;
 }
 
-/* 在小屏幕上调整数据卡片为垂直排列 */
+/* 在小屏幕上调整数据卡片布局 */
 @media (max-width: 768px) {
     .stats-grid {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 10px;
         width: 100%;
         padding: 0;
@@ -180,7 +180,7 @@ html, body {
     }
     
     .count-box.total-laps {
-        grid-column: auto;
+        grid-column: 1 / span 2;
     }
 }
 
@@ -1035,6 +1035,91 @@ form {
     .error-box.full-width {
         font-size: 14px;
         padding: 12px;
+    }
+    
+    /* 移动端表格样式优化 */
+    .styled-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .styled-table tbody {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 10px;
+    }
+    
+    .styled-table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius);
+        background: var(--background-blur);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .styled-table thead {
+        display: none;
+    }
+    
+    .styled-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .styled-table tbody td:last-child {
+        border-bottom: none;
+    }
+    
+    .styled-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: 10px;
+    }
+    
+    /* 移动端表格中的操作按钮样式 */
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 10px;
+    }
+    
+    .action-buttons button {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* 移动端圈数控制按钮样式 */
+    .lap-controls {
+        justify-content: flex-end;
+        gap: 8px;
+    }
+    
+    .lap-button {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .lap-count {
+        font-size: 16px;
+        min-width: 30px;
     }
 }
 
